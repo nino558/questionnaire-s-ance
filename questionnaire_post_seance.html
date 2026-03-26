@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Check post-séance</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0c10;
+    --surface: #13161f;
+    --card: #1a1e2b;
+    --border: #252b3d;
+    --accent: #c8ff57;
+    --accent-dim: rgba(200,255,87,0.12);
+    --blue: #57c8ff;
+    --orange: #ffb057;
+    --red: #ff5757;
+    --green: #57ffb0;
+    --text: #eef0f6;
+    --muted: #6b7494;
+    --radius: 18px;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── SCREENS ── */
+  .screen { display: none; min-height: 100vh; flex-direction: column; }
+  .screen.active { display: flex; }
+
+  /* ── WELCOME ── */
+  #screen-welcome {
+    background: radial-gradient(ellipse at 60% 10%, rgba(200,255,87,0.08) 0%, transparent 60%),
+                radial-gradient(ellipse at 10% 80%, rgba(87,200,255,0.06) 0%, transparent 50%),
+                var(--bg);
+    align-items: center;
+    justify-content: center;
+    padding: 40px 24px;
+    text-align: center;
+    gap: 0;
+  }
+
+  .welcome-icon {
+    width: 80px; height: 80px;
+    background: var(--accent-dim);
+    border: 2px solid var(--accent);
+    border-radius: 24px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 36px;
+    margin-bottom: 28px;
+    animation: pulse-glow 2.5s ease-in-out infinite;
+  }
+
+  @keyframes pulse-glow {
+    0%,100% { box-shadow: 0 0 0 0 rgba(200,255,87,0.3); }
+    50% { box-shadow: 0 0 0 12px rgba(200,255,87,0); }
+  }
+
+  .welcome-label {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+
+  .welcome-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 52px;
+    line-height: 0.95;
+    letter-spacing: 1px;
+    color: #fff;
+    margin-bottom: 16px;
+  }
+
+  .welcome-title span { color: var(--accent); }
+
+  .welcome-sub {
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.6;
+    max-width: 280px;
+    margin: 0 auto 36px;
+  }
+
+  .welcome-time {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 10px 20px;
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 32px;
+  }
+
+  .welcome-time .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    animation: blink 1.5s ease-in-out infinite;
+  }
+
+  @keyframes blink { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
+
+  /* ── NAME SELECT ── */
+  #screen-name {
+    padding: 0;
+    background: var(--bg);
+  }
+
+  .name-header {
+    padding: 52px 24px 24px;
+    background: linear-gradient(180deg, var(--surface) 0%, var(--bg) 100%);
+  }
+
+  .step-indicator {
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 10px;
+  }
+
+  .screen-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px;
+    line-height: 1;
+    color: #fff;
+    margin-bottom: 6px;
+  }
+
+  .screen-sub {
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .name-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 16px 100px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .name-btn {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: 16px;
+    padding: 16px 18px;
+    cursor: pointer;
+    transition: all 0.2s;
+    width: 100%;
+    text-align: left;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .name-btn:active { transform: scale(0.98); background: var(--accent-dim); border-color: var(--accent); }
+
+  .name-avatar {
+    width: 40px; height: 40px;
+    border-radius: 12px;
+    background: var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--accent);
+    flex-shrink: 0;
+    letter-spacing: 0.5px;
+  }
+
+  .name-info { flex: 1; }
+  .name-info strong { display: block; font-size: 15px; font-weight: 600; }
+  .name-info span { font-size: 12px; color: var(--muted); }
+  .name-arrow { color: var(--muted); font-size: 18px; }
+
+  /* ── QUESTION SCREENS ── */
+  .q-screen {
+    padding: 0;
+    background: var(--bg);
+  }
+
+  .q-header {
+    padding: 48px 24px 20px;
+  }
+
+  .progress-bar-wrap {
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    margin-bottom: 28px;
+    overflow: hidden;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 2px;
+    transition: width 0.4s ease;
+  }
+
+  .q-number {
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+
+  .q-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px;
+    line-height: 1.05;
+    color: #fff;
+    margin-bottom: 6px;
+  }
+
+  .q-sub {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  .q-body {
+    flex: 1;
+    padding: 8px 20px 110px;
+    overflow-y: auto;
+  }
+
+  /* ── SLIDER ── */
+  .slider-wrap {
+    margin: 24px 0 8px;
+  }
+
+  .slider-display {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .slider-value {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 72px;
+    line-height: 1;
+    color: var(--accent);
+    display: block;
+    transition: color 0.3s;
+  }
+
+  .slider-label-text {
+    font-size: 14px;
+    color: var(--muted);
+    margin-top: 4px;
+    min-height: 20px;
+    transition: all 0.2s;
+  }
+
+  input[type=range] {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    outline: none;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 5px rgba(200,255,87,0.2);
+    cursor: pointer;
+    transition: box-shadow 0.2s;
+  }
+
+  input[type=range]:active::-webkit-slider-thumb {
+    box-shadow: 0 0 0 10px rgba(200,255,87,0.25);
+  }
+
+  .slider-ticks {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 1px;
+    margin-top: 12px;
+  }
+
+  .slider-ticks span {
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  /* ── SCALE CARDS ── */
+  .scale-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    margin: 20px 0;
+  }
+
+  .scale-card {
+    background: var(--card);
+    border: 2px solid var(--border);
+    border-radius: 14px;
+    padding: 14px 4px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .scale-card .sc-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    line-height: 1;
+    color: var(--text);
+  }
+
+  .scale-card .sc-emoji { font-size: 20px; }
+  .scale-card .sc-lbl { font-size: 9px; color: var(--muted); line-height: 1.2; }
+
+  .scale-card.selected {
+    border-color: var(--accent);
+    background: var(--accent-dim);
+    transform: scale(1.05);
+  }
+
+  .scale-card.selected .sc-num { color: var(--accent); }
+
+  /* ── EMOJI CARDS (Hooper) ── */
+  .hooper-section { margin-bottom: 20px; }
+
+  .hooper-label {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+
+  .emoji-row {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+  }
+
+  .emoji-btn {
+    background: var(--card);
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    padding: 10px 4px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .emoji-btn .e-icon { font-size: 22px; display: block; }
+  .emoji-btn .e-val { font-size: 10px; color: var(--muted); display: block; margin-top: 3px; }
+
+  .emoji-btn.selected {
+    border-color: var(--accent);
+    background: var(--accent-dim);
+    transform: scale(1.08);
+  }
+
+  /* ── BOTTOM NAV ── */
+  .bottom-nav {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    padding: 16px 20px 32px;
+    background: linear-gradient(0deg, var(--bg) 70%, transparent);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .btn-primary {
+    width: 100%;
+    background: var(--accent);
+    color: #0a0c10;
+    border: none;
+    border-radius: 16px;
+    padding: 18px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-primary:active { transform: scale(0.98); opacity: 0.85; }
+  .btn-primary:disabled { opacity: 0.35; cursor: not-allowed; }
+
+  .btn-secondary {
+    width: 100%;
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-secondary:active { background: var(--card); }
+
+  /* ── SUMMARY / EXPORT ── */
+  #screen-summary {
+    background: radial-gradient(ellipse at 50% 0%, rgba(200,255,87,0.07) 0%, transparent 60%), var(--bg);
+    padding: 0;
+  }
+
+  .summary-header {
+    padding: 52px 24px 24px;
+    text-align: center;
+  }
+
+  .summary-check {
+    width: 64px; height: 64px;
+    background: rgba(87,255,176,0.12);
+    border: 2px solid var(--green);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px;
+    margin: 0 auto 20px;
+    animation: pop-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  @keyframes pop-in {
+    from { transform: scale(0); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  .summary-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 40px;
+    color: #fff;
+    margin-bottom: 6px;
+  }
+
+  .summary-name {
+    font-size: 14px;
+    color: var(--muted);
+  }
+
+  .summary-body {
+    padding: 0 20px 120px;
+    overflow-y: auto;
+  }
+
+  .summary-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .summary-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 16px;
+    text-align: center;
+  }
+
+  .summary-card .s-label {
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+
+  .summary-card .s-value {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px;
+    line-height: 1;
+    color: var(--accent);
+  }
+
+  .summary-card .s-sub {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 3px;
+  }
+
+  .hooper-total-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 18px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .hooper-score-big {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 52px;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+
+  .hooper-info { flex: 1; }
+  .hooper-info .h-label { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); }
+  .hooper-info .h-interp { font-size: 14px; font-weight: 600; margin-top: 4px; }
+  .hooper-bar-wrap { height: 4px; background: var(--border); border-radius: 2px; margin-top: 8px; }
+  .hooper-bar { height: 100%; border-radius: 2px; transition: width 0.6s ease; }
+
+  .export-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+
+  .export-title {
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 10px;
+  }
+
+  .export-row {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px;
+    font-family: 'DM Sans', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    word-break: break-all;
+    line-height: 1.6;
+    margin-bottom: 10px;
+    max-height: 80px;
+    overflow-y: auto;
+  }
+
+  .copy-btn {
+    width: 100%;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s;
+  }
+
+  .copy-btn.copied { background: rgba(87,255,176,0.1); border-color: var(--green); color: var(--green); }
+  .copy-btn:active { transform: scale(0.98); }
+
+  /* ── UTILS ── */
+  .fade-in { animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform: translateY(0); } }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════ WELCOME ══════════════════════════ -->
+<div class="screen active" id="screen-welcome">
+  <div class="welcome-icon">⚡</div>
+  <div class="welcome-label">Post-séance • Muscu</div>
+  <h1 class="welcome-title">COMMENT<br>T'ES-TU<br><span>SENTI ?</span></h1>
+  <p class="welcome-sub">2 minutes chrono pour enregistrer ta séance et aider le coach à adapter ton entraînement.</p>
+  <div class="welcome-time">
+    <span class="dot"></span>
+    <span>Environ 2 minutes</span>
+  </div>
+  <button class="btn-primary" onclick="goTo('screen-name')" style="max-width:320px; width:100%">
+    C'est parti →
+  </button>
+</div>
+
+<!-- ══════════════════════════════════════ NOM ══════════════════════════════ -->
+<div class="screen" id="screen-name">
+  <div class="name-header">
+    <div class="step-indicator">Étape 1 sur 5</div>
+    <h2 class="screen-title">QUI ES-TU ?</h2>
+    <p class="screen-sub">Sélectionne ton nom dans la liste</p>
+  </div>
+  <div class="name-list" id="name-list"></div>
+</div>
+
+<!-- ══════════════════════════════════════ Q1 — RPE ═════════════════════════ -->
+<div class="screen q-screen" id="screen-rpe">
+  <div class="q-header">
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:40%"></div></div>
+    <div class="q-number">Question 1 sur 4</div>
+    <h2 class="q-title">EFFORT<br>RESSENTI</h2>
+    <p class="q-sub">À quel niveau de 0 à 10 as-tu travaillé pendant cette séance ?</p>
+  </div>
+  <div class="q-body">
+    <div class="slider-wrap">
+      <div class="slider-display">
+        <span class="slider-value" id="rpe-val">5</span>
+        <div class="slider-label-text" id="rpe-label">Difficile</div>
+      </div>
+      <input type="range" id="rpe-slider" min="0" max="10" value="5" step="1"
+             oninput="updateRPE(this.value)">
+      <div class="slider-ticks">
+        <span>0<br>Repos</span><span>1</span><span>2</span><span>3</span><span>4</span>
+        <span>5</span><span>6</span><span>7</span><span>8</span><span>9</span>
+        <span>10<br>Max</span>
+      </div>
+    </div>
+    <div style="height:16px"></div>
+    <!-- RPE reference card -->
+    <div style="background:var(--card); border:1px solid var(--border); border-radius:14px; padding:14px; font-size:12px; color:var(--muted); line-height:1.8;">
+      <strong style="color:var(--text); display:block; margin-bottom:6px;">Guide RPE :</strong>
+      0 — Repos · 1-2 — Très facile · 3-4 — Modéré · 5-6 — Difficile · 7-8 — Très difficile · 9 — Extrêmement dur · 10 — Effort maximal
+    </div>
+  </div>
+  <div class="bottom-nav">
+    <button class="btn-primary" onclick="goTo('screen-sleep')">Suivant →</button>
+    <button class="btn-secondary" onclick="goTo('screen-name')">← Retour</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ Q2 — SOMMEIL ════════════════════ -->
+<div class="screen q-screen" id="screen-sleep">
+  <div class="q-header">
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:60%"></div></div>
+    <div class="q-number">Question 2 sur 4</div>
+    <h2 class="q-title">QUALITÉ DU<br>SOMMEIL</h2>
+    <p class="q-sub">Comment as-tu dormi la nuit dernière ?</p>
+  </div>
+  <div class="q-body">
+    <div class="scale-grid" id="sleep-grid"></div>
+    <div style="background:var(--card); border:1px solid var(--border); border-radius:14px; padding:14px; font-size:12px; color:var(--muted); line-height:1.8; margin-top:8px;">
+      <strong style="color:var(--text); display:block; margin-bottom:4px;">Échelle :</strong>
+      1 — Très mauvais · 2 — Mauvais · 3 — Moyen · 4 — Bon · 5 — Excellent
+    </div>
+  </div>
+  <div class="bottom-nav">
+    <button class="btn-primary" id="btn-sleep-next" onclick="goTo('screen-charge')" disabled>Suivant →</button>
+    <button class="btn-secondary" onclick="goTo('screen-rpe')">← Retour</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ Q3 — CHARGE PERÇUE ══════════════ -->
+<div class="screen q-screen" id="screen-charge">
+  <div class="q-header">
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:75%"></div></div>
+    <div class="q-number">Question 3 sur 4</div>
+    <h2 class="q-title">CHARGE<br>PERÇUE</h2>
+    <p class="q-sub">Dans l'ensemble, comment as-tu vécu la charge de travail de cette séance ?</p>
+  </div>
+  <div class="q-body">
+    <div class="scale-grid" id="charge-grid"></div>
+    <div style="background:var(--card); border:1px solid var(--border); border-radius:14px; padding:14px; font-size:12px; color:var(--muted); line-height:1.8; margin-top:8px;">
+      <strong style="color:var(--text); display:block; margin-bottom:4px;">Charge perçue :</strong>
+      1 — Très légère · 2 — Légère · 3 — Moyenne · 4 — Lourde · 5 — Très lourde
+    </div>
+  </div>
+  <div class="bottom-nav">
+    <button class="btn-primary" id="btn-charge-next" onclick="goTo('screen-hooper')" disabled>Suivant →</button>
+    <button class="btn-secondary" onclick="goTo('screen-sleep')">← Retour</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ Q4 — HOOPER ═════════════════════ -->
+<div class="screen q-screen" id="screen-hooper">
+  <div class="q-header">
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:90%"></div></div>
+    <div class="q-number">Question 4 sur 4</div>
+    <h2 class="q-title">INDICE<br>HOOPER</h2>
+    <p class="q-sub">4 questions rapides sur ton état général. Note chaque aspect de 1 (très bien) à 5 (très mal).</p>
+  </div>
+  <div class="q-body" id="hooper-body"></div>
+  <div class="bottom-nav">
+    <button class="btn-primary" id="btn-hooper-next" onclick="submitForm()" disabled>Voir mon bilan ✓</button>
+    <button class="btn-secondary" onclick="goTo('screen-charge')">← Retour</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ SUMMARY ═════════════════════════ -->
+<div class="screen" id="screen-summary">
+  <div class="summary-header">
+    <div class="summary-check">✓</div>
+    <h2 class="summary-title">BILAN SÉANCE</h2>
+    <p class="summary-name" id="sum-name"></p>
+  </div>
+  <div class="summary-body">
+
+    <div class="summary-grid">
+      <div class="summary-card">
+        <div class="s-label">RPE</div>
+        <div class="s-value" id="sum-rpe">—</div>
+        <div class="s-sub" id="sum-rpe-lbl">—</div>
+      </div>
+      <div class="summary-card">
+        <div class="s-label">Sommeil</div>
+        <div class="s-value" id="sum-sleep" style="color:var(--blue)">—</div>
+        <div class="s-sub" id="sum-sleep-lbl">—</div>
+      </div>
+      <div class="summary-card">
+        <div class="s-label">Charge perçue</div>
+        <div class="s-value" id="sum-charge" style="color:var(--orange)">—</div>
+        <div class="s-sub" id="sum-charge-lbl">—</div>
+      </div>
+      <div class="summary-card">
+        <div class="s-label">Hooper /20</div>
+        <div class="s-value" id="sum-hooper" style="color:var(--red)">—</div>
+        <div class="s-sub" id="sum-hooper-lbl">—</div>
+      </div>
+    </div>
+
+    <div class="hooper-total-card">
+      <div class="hooper-score-big" id="sum-hooper-big" style="color:var(--green)">—</div>
+      <div class="hooper-info">
+        <div class="h-label">INDICE HOOPER DÉTAIL</div>
+        <div class="h-interp" id="sum-hooper-interp">—</div>
+        <div id="sum-hooper-detail" style="font-size:11px; color:var(--muted); margin-top:6px; line-height:1.8;"></div>
+        <div class="hooper-bar-wrap"><div class="hooper-bar" id="hooper-bar" style="width:0%"></div></div>
+      </div>
+    </div>
+
+    <div class="export-section">
+      <div class="export-title">📋 Ligne Excel à copier</div>
+      <div class="export-row" id="export-row">—</div>
+      <button class="copy-btn" id="copy-btn" onclick="copyData()">
+        <span>📋</span> Copier pour Excel
+      </button>
+    </div>
+
+    <div style="background:var(--card); border:1px solid var(--border); border-radius:14px; padding:14px; font-size:12px; color:var(--muted); line-height:1.7; margin-bottom:16px;">
+      <strong style="color:var(--accent); display:block; margin-bottom:6px;">Comment coller dans Excel ?</strong>
+      1. Appuie sur "Copier pour Excel"<br>
+      2. Ouvre l'onglet DONNÉES dans Excel<br>
+      3. Clique sur la première cellule vide de la prochaine ligne<br>
+      4. Colle (Ctrl+V ou clic droit → Coller)
+    </div>
+
+  </div>
+  <div class="bottom-nav">
+    <button class="btn-primary" onclick="resetForm()">Nouveau questionnaire</button>
+  </div>
+</div>
+
+<script>
+// ── DATA ─────────────────────────────────────────────────────────────────────
+const PLAYERS = [
+  {nom:"DUPONT",prenom:"Thomas",poste:"Milieu"},
+  {nom:"MARTIN",prenom:"Lucas",poste:"Attaquant"},
+  {nom:"BERNARD",prenom:"Hugo",poste:"Défenseur"},
+  {nom:"PETIT",prenom:"Mathieu",poste:"Milieu"},
+  {nom:"ROUX",prenom:"Antoine",poste:"Attaquant"},
+  {nom:"DURAND",prenom:"Kevin",poste:"Défenseur"},
+  {nom:"LEROY",prenom:"Julien",poste:"Milieu"},
+  {nom:"MOREAU",prenom:"Pierre",poste:"Défenseur"},
+  {nom:"SIMON",prenom:"Alexis",poste:"Attaquant"},
+  {nom:"FONTAINE",prenom:"Romain",poste:"Milieu"},
+  {nom:"LEBLANC",prenom:"Enzo",poste:"Défenseur"},
+  {nom:"GIRARD",prenom:"Nathan",poste:"Attaquant"},
+];
+
+const RPE_LABELS = ["Repos","Très facile","Facile","Léger","Modéré","Un peu dur","Difficile","Très difficile","Extrêmement dur","Limite max","EFFORT MAXIMAL"];
+const RPE_COLORS = ["#6b7494","#57ffb0","#57ffb0","#57c8ff","#57c8ff","#ffb057","#ffb057","#ff8a57","#ff5757","#ff5757","#ff2020"];
+
+const SLEEP_EMOJIS  = ["😴","😞","😐","🙂","😄"];
+const SLEEP_LABELS  = ["Très mauvais","Mauvais","Moyen","Bon","Excellent"];
+const CHARGE_EMOJIS = ["🏖️","💤","⚡","🔥","💥"];
+const CHARGE_LABELS = ["Très légère","Légère","Moyenne","Lourde","Très lourde"];
+
+const HOOPER_DIMS = [
+  {id:"fatigue",   label:"Fatigue générale", emojis:["😎","🙂","😐","😩","💀"], sublabels:["Aucune","Légère","Moyenne","Importante","Extrême"]},
+  {id:"stress",    label:"Stress / Humeur",  emojis:["😌","🙂","😐","😤","🤯"], sublabels:["Très calme","Calme","Neutre","Stressé","Épuisé"]},
+  {id:"douleurs",  label:"Douleurs muscu.",  emojis:["💪","🙂","😐","😣","🚑"], sublabels:["Aucune","Légères","Modérées","Fortes","Intenses"]},
+  {id:"sommeil_h", label:"Qualité du sommeil (Hooper)", emojis:["😄","🙂","😐","😞","😴"], sublabels:["Excellent","Bon","Moyen","Mauvais","Très mauvais"]},
+];
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let state = {
+  player: null,
+  rpe: 5,
+  sleep: null,
+  charge: null,
+  hooper: {fatigue:null, stress:null, douleurs:null, sommeil_h:null}
+};
+
+// ── INIT ─────────────────────────────────────────────────────────────────────
+function initNameList() {
+  const list = document.getElementById('name-list');
+  list.innerHTML = '';
+  PLAYERS.forEach((p,i) => {
+    const btn = document.createElement('button');
+    btn.className = 'name-btn';
+    const initials = p.nom.slice(0,2);
+    btn.innerHTML = `
+      <div class="name-avatar">${initials}</div>
+      <div class="name-info">
+        <strong>${p.nom} ${p.prenom}</strong>
+        <span>${p.poste}</span>
+      </div>
+      <span class="name-arrow">›</span>`;
+    btn.onclick = () => selectPlayer(i);
+    list.appendChild(btn);
+  });
+}
+
+function initScaleGrid(containerId, emojis, labels, stateKey, nextBtnId) {
+  const grid = document.getElementById(containerId);
+  grid.innerHTML = '';
+  emojis.forEach((emoji, i) => {
+    const card = document.createElement('div');
+    card.className = 'scale-card';
+    card.innerHTML = `
+      <span class="sc-num">${i+1}</span>
+      <span class="sc-emoji">${emoji}</span>
+      <span class="sc-lbl">${labels[i]}</span>`;
+    card.onclick = () => {
+      grid.querySelectorAll('.scale-card').forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+      state[stateKey] = i+1;
+      document.getElementById(nextBtnId).disabled = false;
+    };
+    grid.appendChild(card);
+  });
+}
+
+function initHooper() {
+  const body = document.getElementById('hooper-body');
+  body.innerHTML = '';
+  HOOPER_DIMS.forEach(dim => {
+    const section = document.createElement('div');
+    section.className = 'hooper-section';
+    section.innerHTML = `<div class="hooper-label">${dim.label}</div>
+      <div class="emoji-row" id="hooper-${dim.id}"></div>`;
+    body.appendChild(section);
+    const row = section.querySelector('.emoji-row');
+    dim.emojis.forEach((emoji, i) => {
+      const btn = document.createElement('div');
+      btn.className = 'emoji-btn';
+      btn.innerHTML = `<span class="e-icon">${emoji}</span><span class="e-val">${i+1} — ${dim.sublabels[i]}</span>`;
+      btn.onclick = () => {
+        row.querySelectorAll('.emoji-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        state.hooper[dim.id] = i+1;
+        checkHooperComplete();
+      };
+      row.appendChild(btn);
+    });
+  });
+}
+
+function checkHooperComplete() {
+  const complete = Object.values(state.hooper).every(v => v !== null);
+  document.getElementById('btn-hooper-next').disabled = !complete;
+}
+
+// ── NAVIGATION ────────────────────────────────────────────────────────────────
+function goTo(screenId) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(screenId).classList.add('active');
+  document.getElementById(screenId).classList.add('fade-in');
+  window.scrollTo(0,0);
+}
+
+function selectPlayer(idx) {
+  state.player = PLAYERS[idx];
+  goTo('screen-rpe');
+}
+
+function updateRPE(val) {
+  state.rpe = parseInt(val);
+  const v = document.getElementById('rpe-val');
+  const l = document.getElementById('rpe-label');
+  v.textContent = val;
+  v.style.color = RPE_COLORS[val];
+  l.textContent = RPE_LABELS[val];
+}
+
+// ── SUBMIT ────────────────────────────────────────────────────────────────────
+function submitForm() {
+  const hooperTotal = Object.values(state.hooper).reduce((a,b) => a+b, 0);
+
+  // Update summary
+  document.getElementById('sum-name').textContent = `${state.player.prenom} ${state.player.nom} — ${new Date().toLocaleDateString('fr-FR')}`;
+  document.getElementById('sum-rpe').textContent = state.rpe;
+  document.getElementById('sum-rpe').style.color = RPE_COLORS[state.rpe];
+  document.getElementById('sum-rpe-lbl').textContent = RPE_LABELS[state.rpe];
+
+  document.getElementById('sum-sleep').textContent = state.sleep;
+  document.getElementById('sum-sleep-lbl').textContent = SLEEP_LABELS[state.sleep-1];
+
+  document.getElementById('sum-charge').textContent = state.charge;
+  document.getElementById('sum-charge-lbl').textContent = CHARGE_LABELS[state.charge-1];
+
+  document.getElementById('sum-hooper').textContent = hooperTotal;
+  document.getElementById('sum-hooper-big').textContent = hooperTotal + '/20';
+
+  // Hooper detail
+  const dims = HOOPER_DIMS;
+  let detail = '';
+  dims.forEach(d => { detail += `${d.label}: ${state.hooper[d.id]}/5  `; });
+  document.getElementById('sum-hooper-detail').textContent = detail.trim();
+
+  // Hooper interpretation (4=very good, 8=good, 12=moderate, 16=bad, 20=very bad)
+  let hooperColor, hooperInterp;
+  if (hooperTotal <= 6)       { hooperColor = '#57ffb0'; hooperInterp = '✓ Très bon état de récupération'; }
+  else if (hooperTotal <= 10) { hooperColor = '#57c8ff'; hooperInterp = '✓ Bon état général'; }
+  else if (hooperTotal <= 14) { hooperColor = '#ffb057'; hooperInterp = '⚠ Fatigue modérée'; }
+  else if (hooperTotal <= 17) { hooperColor = '#ff8a57'; hooperInterp = '⚠ Fatigue importante'; }
+  else                        { hooperColor = '#ff5757'; hooperInterp = '⛔ Surcharge — récupération nécessaire'; }
+
+  document.getElementById('sum-hooper').style.color = hooperColor;
+  document.getElementById('sum-hooper-big').style.color = hooperColor;
+  document.getElementById('sum-hooper-interp').textContent = hooperInterp;
+  document.getElementById('sum-hooper-interp').style.color = hooperColor;
+  document.getElementById('hooper-bar').style.width = (hooperTotal/20*100) + '%';
+  document.getElementById('hooper-bar').style.background = hooperColor;
+
+  const hooperLbl = hooperTotal <= 6 ? 'Très bon' : hooperTotal <= 10 ? 'Bon' :
+                    hooperTotal <= 14 ? 'Modéré' : hooperTotal <= 17 ? 'Élevé' : 'Très élevé';
+  document.getElementById('sum-hooper-lbl').textContent = hooperLbl;
+
+  // Build export line (tab-separated for Excel paste)
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('fr-FR');
+  const timeStr = now.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'});
+  const exportLine = [
+    dateStr,
+    timeStr,
+    state.player.nom,
+    state.player.prenom,
+    state.player.poste,
+    state.rpe,
+    state.sleep,
+    state.charge,
+    state.hooper.fatigue,
+    state.hooper.stress,
+    state.hooper.douleurs,
+    state.hooper.sommeil_h,
+    hooperTotal
+  ].join('\t');
+
+  document.getElementById('export-row').textContent = [
+    dateStr, timeStr,
+    state.player.nom, state.player.prenom,
+    'RPE:'+state.rpe,
+    'Sommeil:'+state.sleep,
+    'Charge:'+state.charge,
+    'Hooper:'+hooperTotal+'/20'
+  ].join(' | ');
+
+  window._exportData = exportLine;
+
+  goTo('screen-summary');
+}
+
+function copyData() {
+  if (!window._exportData) return;
+  navigator.clipboard.writeText(window._exportData).then(() => {
+    const btn = document.getElementById('copy-btn');
+    btn.classList.add('copied');
+    btn.innerHTML = '<span>✓</span> Copié !';
+    setTimeout(() => {
+      btn.classList.remove('copied');
+      btn.innerHTML = '<span>📋</span> Copier pour Excel';
+    }, 2500);
+  }).catch(() => {
+    // Fallback
+    const ta = document.createElement('textarea');
+    ta.value = window._exportData;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    const btn = document.getElementById('copy-btn');
+    btn.classList.add('copied');
+    btn.innerHTML = '<span>✓</span> Copié !';
+    setTimeout(() => { btn.classList.remove('copied'); btn.innerHTML = '<span>📋</span> Copier pour Excel'; }, 2500);
+  });
+}
+
+function resetForm() {
+  state = { player:null, rpe:5, sleep:null, charge:null, hooper:{fatigue:null,stress:null,douleurs:null,sommeil_h:null} };
+  document.getElementById('rpe-slider').value = 5;
+  updateRPE(5);
+  initScaleGrid('sleep-grid',  SLEEP_EMOJIS,  SLEEP_LABELS,  'sleep',  'btn-sleep-next');
+  initScaleGrid('charge-grid', CHARGE_EMOJIS, CHARGE_LABELS, 'charge', 'btn-charge-next');
+  initHooper();
+  goTo('screen-welcome');
+}
+
+// ── BOOT ──────────────────────────────────────────────────────────────────────
+initNameList();
+updateRPE(5);
+initScaleGrid('sleep-grid',  SLEEP_EMOJIS,  SLEEP_LABELS,  'sleep',  'btn-sleep-next');
+initScaleGrid('charge-grid', CHARGE_EMOJIS, CHARGE_LABELS, 'charge', 'btn-charge-next');
+initHooper();
+</script>
+</body>
+</html>
